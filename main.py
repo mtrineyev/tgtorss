@@ -25,7 +25,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from markdown2 import markdown
 from telethon import TelegramClient, sync
-from telethon.tl.types import PeerChannel
 from telethon.tl.functions.channels import GetFullChannelRequest
 
 
@@ -33,6 +32,7 @@ api_id = config['Telegram']['API_ID']
 api_hash = config['Telegram']['API_HASH']
 
 client = TelegramClient('tg2rss', api_id, api_hash)
+channel_hash = dict()
 
 templates = Jinja2Templates(directory='templates')
 app = FastAPI()
@@ -49,30 +49,39 @@ async def create_rss(channel_alias: str, request: Request):
     """
     Get posts from the channel and return rss-feed
     """
+    global channel_hash
+    channel_alias = channel_alias.lstrip('@')
     try:
         await client.start()
-        entity = await client.get_entity(channel_alias)
-        channel = await client.get_entity(PeerChannel(entity.id))
+        if channel_alias not in channel_hash:
+            channel = await client.get_entity(channel_alias)
+            ch_full = await client(GetFullChannelRequest(channel=channel))
+            channel_hash[channel_alias] = {
+                'username': channel.username,
+                'title': channel.title,
+                'id': channel.id,
+                'about': ch_full.full_chat.about,
+            }
     except Exception as e:
         warn = f"{str(e)}, request: '{channel_alias}'"
         logging.warning(warn)
         return warn
 
-    ch_full = await client(GetFullChannelRequest(channel=channel))
-    logging.info(f"'{channel.username}' requested")
+    ch = channel_hash[channel_alias]
+    logging.info(f"Requested '@{ch['username']}'")
 
     fg = FeedGenerator()
-    fg.title(f'{channel.title} (@{channel.username}, id:{channel.id})')
-    fg.subtitle(ch_full.full_chat.about)
-    fg.link(href=f'https://t.me/s/{channel.username}', rel='alternate')
+    fg.title(f"{ch['title']} (@{ch['username']}, id:{ch['id']})")
+    fg.subtitle(ch['about'])
+    fg.link(href=f"https://t.me/s/{ch['username']}", rel='alternate')
     fg.generator(config['RSS']['GENERATOR'])
     fg.language(config['RSS']['LANGUAGE'])
 
-    async for message in client.iter_messages(channel,
+    async for message in client.iter_messages(ch['id'],
                             limit=int(config['RSS']['RECORDS'])):
         if not (config['RSS'].getboolean('SKIP_EMPTY') and not message.text):
             fe = fg.add_entry(order='append')
-            fe.guid(guid=f'https://t.me/{channel.username}/{message.id}',
+            fe.guid(guid=f"https://t.me/{ch['username']}/{message.id}",
                 permalink=True)
             fe.content(markdown(message.text))
             fe.published(message.date)
