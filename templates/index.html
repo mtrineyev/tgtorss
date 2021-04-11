@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script>
+    function submitData() {
+        var channel = document.getElementById('channel').value
+        console.log(channel)
+        window.location.href = '/channel/' + channel
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram channels RSS generator</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+</head>
+
+<body>
+    <main>
+        <h1>Telegram channels RSS generator</h1>
+
+        <h2>Please enter channel's name to get its RSS-feed</h2>
+        <p>
+        Examples:
+        <ul>
+            <li>bbcukrainian
+            <li>@bbcukrainian
+        </ul>
+        </p>
+        <input type="text" name="channel" id="channel" data-cip-id="channel">
+        <input type="submit" value="Create RSS" onclick="submitData()">
+        <footer>
+            © 2021 <a href="https://mediamonitoringbot.com/" target="_blank"> MediaMonitoringBot</a>,
+            written by <a href="mailto:mtrineyev@gmail.com" target="_blank">Maksym Trineiev</a>
+        </footer>
+    </main>
+</body>
+
+</html>

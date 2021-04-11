@@ -1,0 +1,26 @@
+[Telegram]
+# How to get API ID and HASH: https://telethon.readthedocs.io/en/latest/basic/signing-in.html
+API_ID=1234567
+API_HASH=0123456789abcdfghijk0123456789ab
+
+
+[Logging]
+# Leave it blank if you want get logging to the console
+FILE_NAME=tgtorss.log
+# The numeric values of logging levels (https://docs.python.org/3/library/logging.html)
+# CRITICAL = 50
+# ERROR = 40
+# WARNING = 30
+# INFO = 20
+# DEBUG = 10
+# NOTSET = 0
+LEVEL=20
+
+
+[RSS]
+GENERATOR=MediaMonitoringBot internal service convert any Telegram channel to RSS feed
+LANGUAGE=ua
+# Number of messages to be retrieved
+RECORDS=15
+# Skip messages without text
+SKIP_EMPTY=yes
