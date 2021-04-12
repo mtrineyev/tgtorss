@@ -19,20 +19,26 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     level=int(config['Logging']['LEVEL']))
 
+from asyncio import sleep
 from feedgen.feed import FeedGenerator
 from fastapi import FastAPI, Response, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from markdown2 import markdown
+import pickle
 from telethon import TelegramClient, sync
 from telethon.tl.functions.channels import GetFullChannelRequest
 
 
-api_id = config['Telegram']['API_ID']
-api_hash = config['Telegram']['API_HASH']
+client = TelegramClient('tg2rss',
+    config['Telegram']['API_ID'],
+    config['Telegram']['API_HASH'])
 
-client = TelegramClient('tg2rss', api_id, api_hash)
-channel_hash = dict()
+try:
+    with open('hash.pickle', 'rb') as f:
+        channel_hash = pickle.load(f)
+except FileNotFoundError:
+    channel_hash = dict()
 
 templates = Jinja2Templates(directory='templates')
 app = FastAPI()
@@ -49,7 +55,7 @@ async def create_rss(channel_alias: str, request: Request):
     """
     Get posts from the channel and return rss-feed
     """
-    global channel_hash
+    global channel_hash, client
     channel_alias = channel_alias.lstrip('@')
     try:
         await client.start()
@@ -60,8 +66,11 @@ async def create_rss(channel_alias: str, request: Request):
                 'username': channel.username,
                 'title': channel.title,
                 'id': channel.id,
-                'about': ch_full.full_chat.about,
+                'about': ch_full.full_chat.about or channel.username,
             }
+            with open('hash.pickle', 'wb') as f:
+                pickle.dump(channel_hash, f)
+            sleep(1)
         ch = channel_hash[channel_alias]
         messages = [m async for m in client.iter_messages(
             ch['id'], limit=int(config['RSS']['RECORDS']))]
