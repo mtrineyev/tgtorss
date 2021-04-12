@@ -30,7 +30,7 @@ uvicorn main:app --reload --host your.server.internal.ip --port 8091
 Note: on the first request to the server you will be asked for Telegram phone and password used for the `API_ID`
 
 ## To test server
-Open in any browser `localhost:8091`
+`curl http://localhost:8091/channel/bbcukrainian`
   
 ## Licence
 The script is free software written by Maksym Trineyev (mtrineyev@gmail.com).
