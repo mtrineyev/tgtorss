@@ -14,7 +14,7 @@ Python script using Telegram-client API for generation RSS feed from Telegram ch
 - `source venv/bin/activate`
 - `pip install -r requirements.txt`
 
-## To run server
+## To run the server
 
 - `cd ~/tgtorss`
 - `nano tgtorss.sh`
@@ -29,7 +29,7 @@ uvicorn main:app --reload --host your.server.internal.ip --port 8091
 
 Note: on the first request to the server you will be asked for Telegram phone and password used for the `API_ID`
 
-## To test server
+## To test the server
 `curl http://localhost:8091/channel/bbcukrainian`
   
 ## Licence
