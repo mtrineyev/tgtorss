@@ -62,13 +62,13 @@ async def create_rss(channel_alias: str, request: Request):
                 'id': channel.id,
                 'about': ch_full.full_chat.about,
             }
+        ch = channel_hash[channel_alias]
+        messages = [m async for m in client.iter_messages(
+            ch['id'], limit=int(config['RSS']['RECORDS']))]
     except Exception as e:
         warn = f"{str(e)}, request: '{channel_alias}'"
         logging.warning(warn)
         return warn
-
-    ch = channel_hash[channel_alias]
-    logging.info(f"Requested '@{ch['username']}'")
 
     fg = FeedGenerator()
     fg.title(f"{ch['title']} (@{ch['username']}, id:{ch['id']})")
@@ -76,16 +76,14 @@ async def create_rss(channel_alias: str, request: Request):
     fg.link(href=f"https://t.me/s/{ch['username']}", rel='alternate')
     fg.generator(config['RSS']['GENERATOR'])
     fg.language(config['RSS']['LANGUAGE'])
-
-    async for message in client.iter_messages(ch['id'],
-                            limit=int(config['RSS']['RECORDS'])):
-        if not (config['RSS'].getboolean('SKIP_EMPTY') and not message.text):
+    for m in messages:
+        if not (config['RSS'].getboolean('SKIP_EMPTY') and not m.text):
             fe = fg.add_entry(order='append')
-            fe.guid(guid=f"https://t.me/{ch['username']}/{message.id}",
-                permalink=True)
-            fe.content(markdown(message.text))
-            fe.published(message.date)
+            fe.guid(guid=f"https://t.me/{ch['username']}/{m.id}", permalink=True)
+            fe.content(markdown(m.text))
+            fe.published(m.date)
 
+    logging.info(f"Successfully requested '@{ch['username']}'")
     return Response(content=fg.rss_str(), media_type='application/xml')
 
 
