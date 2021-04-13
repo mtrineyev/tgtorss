@@ -19,7 +19,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     level=int(config['Logging']['LEVEL']))
 
-from asyncio import sleep
 from feedgen.feed import FeedGenerator
 from fastapi import FastAPI, Response, Request
 from fastapi.responses import HTMLResponse
@@ -30,7 +29,8 @@ from telethon import TelegramClient, sync
 from telethon.tl.functions.channels import GetFullChannelRequest
 
 
-client = TelegramClient('tg2rss',
+client = TelegramClient(
+    config['Telegram']['SESSION'],
     config['Telegram']['API_ID'],
     config['Telegram']['API_HASH'])
 
@@ -70,7 +70,6 @@ async def create_rss(channel_alias: str, request: Request):
             }
             with open('hash.pickle', 'wb') as f:
                 pickle.dump(channel_hash, f)
-            sleep(1)
         ch = channel_hash[channel_alias]
         messages = [m async for m in client.iter_messages(
             ch['id'], limit=int(config['RSS']['RECORDS']))]
