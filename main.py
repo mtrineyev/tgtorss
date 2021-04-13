@@ -37,6 +37,7 @@ client = TelegramClient(
 try:
     with open('hash.pickle', 'rb') as f:
         channel_hash = pickle.load(f)
+    logging.info(f'Read from the hash {len(channel_hash)} records')
 except FileNotFoundError:
     channel_hash = dict()
 
@@ -68,11 +69,12 @@ async def create_rss(channel_alias: str, request: Request):
                 'id': channel.id,
                 'about': ch_full.full_chat.about or channel.username,
             }
+            logging.info(f"Adding to the hash '@{channel_alias}'")
             with open('hash.pickle', 'wb') as f:
                 pickle.dump(channel_hash, f)
         ch = channel_hash[channel_alias]
         messages = [m async for m in client.iter_messages(
-            ch['id'], limit=int(config['RSS']['RECORDS']))]
+            ch['username'], limit=int(config['RSS']['RECORDS']))]
     except Exception as e:
         warn = f"{str(e)}, request: '{channel_alias}'"
         logging.warning(warn)
