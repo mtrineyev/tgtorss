@@ -15,8 +15,8 @@ Python script using Telegram-client API for generation RSS feed from Telegram ch
 - `pip install -r requirements.txt`
 
 ## To run the server
-
 - `cd ~/tgtorss`
+- `python connect.py` and enter your phone and code you will recieve
 - `nano tgtorss.sh`
 ```
 #!/bin/bash
@@ -27,7 +27,9 @@ uvicorn main:app --reload --host your.server.internal.ip --port 8091
 - `chmod +x tgtorss.sh`
 - `./tgtorss.sh`
 
-Note: on the first request to the server you will be asked for Telegram phone and password used for the `API_ID`
+IMPORTANT:
+1. Do not make more than 30 requests per seconds to a new channels, otherwise your ID may be banned to several hours. When a channel has been accessed first time its information hashed and next requests to the channel are safe. You can work with the hash file using the tool `hash.py`.
+2. If you will delete `*.session` file you should also delete `hash.pickle` file and re-connect to the Telegram.
 
 ## To test the server
 `curl http://localhost:8091/channel/bbcukrainian`

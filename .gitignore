@@ -6,3 +6,4 @@ venv
 *.session-journal
 config.ini
 *.pickle
+*.sh
