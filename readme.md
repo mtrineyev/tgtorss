@@ -37,8 +37,12 @@ IMPORTANT:
 
 ## To test the server
 `curl http://localhost:8091/channel/bbcukrainian`
+
+## The tools
+- `connect.py` - creates new connection to Telegram client or shows information about active connection, if any
+- `hash.py` - hash file viewing/keys deleting tool
   
-## Licence
+## The licence
 The script is free software written by Maksym Trineyev (mtrineyev@gmail.com).
 
 It comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law.
