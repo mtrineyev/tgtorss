@@ -57,7 +57,7 @@ def delete_keys(hash: dict, keys_to_delete: list) -> None:
     return
 
 def print_hash(hash: dict, sort: bool) -> None:
-    pprint.pp(hash, sort_dicts=sort)
+    pprint.pprint(hash, sort_dicts=sort)
     return
 
 
