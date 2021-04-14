@@ -37,13 +37,13 @@ def parse_args() -> tuple:
                 to delete "lastbp" and "LastBP" keys
         
         Note:
-          1. "hash.pickle" file will be used
+          1. will be used "hash.pickle" file
           2. the keys are case sensitive''')
     )
     parser.add_argument('-d', '--delete',
-        type=str, nargs='+', help='delete the first level key(s)')
+        type=str, nargs='+', help='delete records for the first level keys')
     parser.add_argument('-s', '--sort',
-        action='store_true', help='print result sorted by keys (for v 3.8+)')
+        action='store_true', help='print result sorted by keys (from v3.8+)')
     return parser.parse_args().delete, parser.parse_args().sort
 
 def delete_keys(hash: dict, keys_to_delete: list) -> None:
@@ -52,7 +52,7 @@ def delete_keys(hash: dict, keys_to_delete: list) -> None:
             hash.pop(key)
         except KeyError:
             print('Key not found:', key)
-            return
+            exit(3)
     with open('hash.pickle', 'wb') as f:
         pickle.dump(hash, f)
     return
@@ -63,6 +63,7 @@ def print_hash(hash: dict, sort: bool) -> None:
         pprint.pprint(hash, sort_dicts=sort)
     else:
         pprint.pprint(hash)
+    print('Total', len(hash), 'record(s)')
     return
 
 
