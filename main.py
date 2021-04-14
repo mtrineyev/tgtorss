@@ -27,6 +27,7 @@ from markdown2 import markdown
 import pickle
 from telethon import TelegramClient, sync
 from telethon.tl.functions.channels import GetFullChannelRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest
 
 
 client = TelegramClient(
@@ -37,7 +38,7 @@ client = TelegramClient(
 try:
     with open('hash.pickle', 'rb') as f:
         channel_hash = pickle.load(f)
-    logging.info(f'Read from the hash {len(channel_hash)} records')
+    logging.info(f'Readed {len(channel_hash)} records from the hash')
 except FileNotFoundError:
     channel_hash = dict()
 
@@ -58,18 +59,26 @@ async def create_rss(channel_alias: str, request: Request):
     """
     global channel_hash, client
     channel_alias = channel_alias.lstrip('@')
+    private_channel = channel_alias[:8] == 'joinchat'
+    if private_channel:
+        private_hash = channel_alias[8:]
+        channel_alias = 't.me/joinchat/' + private_hash
     try:
         await client.start()
         if channel_alias not in channel_hash:
+            if private_channel:
+                await client(ImportChatInviteRequest(private_hash))
             channel = await client.get_entity(channel_alias)
             ch_full = await client(GetFullChannelRequest(channel=channel))
+            if private_channel:
+                await client.delete_dialog(channel.id)
             channel_hash[channel_alias] = {
-                'username': channel.username,
+                'username': channel.username or channel.id,
                 'title': channel.title,
                 'id': channel.id,
                 'about': ch_full.full_chat.about or channel.username,
             }
-            logging.info(f"Adding to the hash '@{channel_alias}'")
+            logging.info(f"Adding to the hash '{channel_alias}'")
             with open('hash.pickle', 'wb') as f:
                 pickle.dump(channel_hash, f)
         ch = channel_hash[channel_alias]
@@ -83,17 +92,19 @@ async def create_rss(channel_alias: str, request: Request):
     fg = FeedGenerator()
     fg.title(f"{ch['title']} (@{ch['username']}, id:{ch['id']})")
     fg.subtitle(ch['about'])
-    fg.link(href=f"https://t.me/s/{ch['username']}", rel='alternate')
+    link = channel_alias if private_channel else f"t.me/s/{ch['username']}"
+    fg.link(href=f'https://{link}', rel='alternate')
     fg.generator(config['RSS']['GENERATOR'])
     fg.language(config['RSS']['LANGUAGE'])
     for m in messages:
         if not (config['RSS'].getboolean('SKIP_EMPTY') and not m.text):
             fe = fg.add_entry(order='append')
-            fe.guid(guid=f"https://t.me/{ch['username']}/{m.id}", permalink=True)
+            link = 'https://t.me/' + ('c/' if private_channel else '')
+            fe.guid(guid=f"{link}{ch['username']}/{m.id}", permalink=True)
             fe.content(markdown(m.text))
             fe.published(m.date)
 
-    logging.info(f"Successfully requested '@{ch['username']}'")
+    logging.info(f"Successfully requested '{ch['username']}'")
     return Response(content=fg.rss_str(), media_type='application/xml')
 
 

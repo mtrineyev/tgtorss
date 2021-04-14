@@ -1,7 +1,11 @@
 # Telegram channel RSS feed generation
 
 ## Description
-Python script using Telegram-client API for generation RSS feed from Telegram channels
+Python script using Telegram-client API for generation RSS feed from Telegram channels.
+
+Examples:
+- to get RSS feed from the public channel: http://localhost:8091/channel/name.
+- to get RSS feed from the private channel: http://localhost:8091/channel/joinchatAAAAAAXXXXXXXXXX (without '/' in inviting link). The user should NOT be joined to the private channel. The private channel will be joined, readed and leaved automatically.
 
 ## Setup and deployment
 - `git clone https://github.com/mtrineyev/tgtorss.git`
