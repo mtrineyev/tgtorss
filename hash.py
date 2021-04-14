@@ -7,6 +7,7 @@ Written by Maksym Trineyev
 import argparse
 import pickle
 import pprint
+from sys import version_info
 import textwrap
 
 
@@ -42,7 +43,7 @@ def parse_args() -> tuple:
     parser.add_argument('-d', '--delete',
         type=str, nargs='+', help='delete the first level key(s)')
     parser.add_argument('-s', '--sort',
-        action='store_true', help='print result sorted by keys')
+        action='store_true', help='print result sorted by keys (for v 3.8+)')
     return parser.parse_args().delete, parser.parse_args().sort
 
 def delete_keys(hash: dict, keys_to_delete: list) -> None:
@@ -57,7 +58,11 @@ def delete_keys(hash: dict, keys_to_delete: list) -> None:
     return
 
 def print_hash(hash: dict, sort: bool) -> None:
-    pprint.pprint(hash, sort_dicts=sort)
+    version = 10 * version_info[0] + version_info[1]
+    if version >= 38:
+        pprint.pprint(hash, sort_dicts=sort)
+    else:
+        pprint.pprint(hash)
     return
 
 
