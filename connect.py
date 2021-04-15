@@ -22,9 +22,10 @@ if __name__ == '__main__':
         user = client.get_me()
     except Exception as e:
         print(f"Can't connect to Telegram client. Reason: {str(e)}")
-    else:
-        print("Client connected as "\
-            f"{user.first_name} {user.last_name} "\
-            f"(Username: {user.username}, "\
-            f"phone: +{user.phone})\n"\
-            f"Session: {config['Telegram']['SESSION']}")
+        exit(1)
+    print("Client connected as "\
+        f"{user.first_name} {user.last_name}\n"\
+        f"Username: {user.username}\n"\
+        f"Phone: +{user.phone}\n"\
+        f"Session: {config['Telegram']['SESSION']}")
+    client.disconnect()
