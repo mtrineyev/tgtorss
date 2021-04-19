@@ -103,7 +103,7 @@ async def create_rss(channel_alias: str, request: Request):
             fe.content(markdown(m.text))
             fe.published(m.date)
 
-    logging.info(f"Successfully requested '{ch['username']}'")
+    logging.debug(f"Successfully requested '{ch['username']}'")
     return Response(content=fg.rss_str(), media_type='application/xml')
 
 
