@@ -70,13 +70,12 @@ async def create_rss(channel_alias: str, request: Request):
                 await client(ImportChatInviteRequest(private_hash))
             channel = await client.get_entity(channel_alias)
             ch_full = await client(GetFullChannelRequest(channel=channel))
-            if private_channel:
-                await client.delete_dialog(channel.id)
+            username = channel.username or channel.id
             channel_hash[channel_alias] = {
-                'username': channel.username or channel.id,
+                'username': username,
                 'title': channel.title,
                 'id': channel.id,
-                'about': ch_full.full_chat.about or channel.username,
+                'about': ch_full.full_chat.about or str(username),
             }
             logging.info(f"Adding to the hash '{channel_alias}'")
             with open('hash.pickle', 'wb') as f:
