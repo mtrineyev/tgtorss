@@ -45,7 +45,7 @@ IMPORTANT:
 
 ## The tools
 - `connect.py` - creates new connection to Telegram client or shows information about active connection, if any
-- `hash.py` - hash file viewing/keys deleting tool
+- `hash.py` - hash file viewing/keys deleting tool. Note: you may delete keys only when the server is switched off.
 
 
 ## The licence
