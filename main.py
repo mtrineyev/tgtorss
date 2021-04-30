@@ -1,8 +1,6 @@
 """
 Telegram to RSS web server
 
-Run server: uvicorn main:app --reload --host 0.0.0.0 --port 8091
-
 For detailed setup, deployment and run instructions see readme.md file
 
 © 2021 MediaMonitoringBot, written by Maksym Trineiev
@@ -28,6 +26,7 @@ import pickle
 from telethon import TelegramClient, sync
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest
+from uvicorn import run
 
 
 client = TelegramClient(
@@ -108,4 +107,4 @@ async def create_rss(channel_alias: str, request: Request):
 
 
 if __name__ == '__main__':
-    print(__doc__)
+    run("main:app", host="0.0.0.0", port=8091, reload=True)

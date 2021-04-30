@@ -23,9 +23,9 @@ Examples:
 - `nano tgtorss.sh` and copy the code below
 ```
 #!/bin/bash
-cd ~/tgtorss
+cd /home/USER/tgtorss
 source venv/bin/activate
-uvicorn main:app --reload --host your.server.internal.ip --port 8091
+python main.py
 deactivate
 ```
 - `chmod +x tgtorss.sh`
@@ -40,7 +40,7 @@ IMPORTANT:
 
 
 ## To test the server
-`curl http://your.server.internal.ip:8091/channel/bbcukrainian`
+`curl http://localhost:8091/channel/bbcukrainian`
 
 
 ## The tools
